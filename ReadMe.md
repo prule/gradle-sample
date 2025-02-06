@@ -1,3 +1,5 @@
+# Sharing gradle configuration between modules
+
 When setting up multimodule gradle projects, we often need to share configuration - such as java toolkit version, plugins, junit platform etc... 
 
 Previously I would have used the `allprojects` or `subprojects` block to do this, but instead I should be using convention plugins. These are locally defined plugins which contain the configuration we want to share. The submodules can then apply those plugins without needing to copy and paste the configuration - this makes it easy to selectively choose which plugins to apply to which module.
@@ -82,12 +84,20 @@ Set up sdkman:
 .sdkmanrc created.
 ```
 
+Add a renovate configuration:
+```commandline
+renovate.json5
+```
+
 ### Project structure
 
 Lets look at the project structure:
 ```commandline
 > gradle-sample % tree .
 .
+├── .sdkmanrc
+├── .gitignore
+├── renovate.json5
 ├── app
 │   ├── build.gradle.kts
 │   └── src
@@ -157,6 +167,18 @@ Lets look at the project structure:
 └── resources
 ```
 
+### Convention plugins
+
+This project demonstrates how to use convention plugins located in the `buildSrc` directory. These plugins centralize common build configurations and dependencies, eliminating duplication across modules while allowing for consistent standards.
+
+Three key convention plugins handle different aspects of the build:
+
+- `buildlogic.kotlin-common-conventions`: Sets up core Kotlin configuration, repositories, and testing infrastructure shared by all modules
+- `buildlogic.kotlin-library-conventions`: Configures library modules with the java-library plugin and common library settings
+- `buildlogic.kotlin-application-conventions`: Configures the application module with executable settings and application plugin
+
+This modular plugin structure allows each project module to simply declare which convention plugin it needs. For more information see https://docs.gradle.org/current/userguide/sharing_build_logic_between_subprojects.html
+
 Here I've opted to create an Application with libraries project - we've got:
 
 1. `app` - the application 
@@ -177,21 +199,6 @@ app
 ```
 
 ### Gradle build logic
-
-If we look in the buildSrc directory there are 3 convention plugins
-
-* [buildlogic.kotlin-common-conventions.gradle.kts](buildSrc/src/main/kotlin/buildlogic.kotlin-common-conventions.gradle.kts)
-  * loads kotlin plugin
-  * sets repositories
-  * some common dependencies
-  * java version
-  * and sets up JUnit platform
-* [buildlogic.kotlin-library-conventions.gradle.kts](buildSrc/src/main/kotlin/buildlogic.kotlin-library-conventions.gradle.kts)
-  * loads the common-conventions plugin
-  * loads the java-library plugin
-* [buildlogic.kotlin-application-conventions.gradle.kts](buildSrc/src/main/kotlin/buildlogic.kotlin-application-conventions.gradle.kts)
-  * loads the common-conventions plugin
-  * loads the application plugin
 
 In our modules:
 
