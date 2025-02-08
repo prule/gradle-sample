@@ -2,7 +2,7 @@
 
 When setting up multimodule gradle projects, we often need to share configuration - such as java toolkit version, plugins, junit platform etc... 
 
-Previously I would have used the `allprojects` or `subprojects` block to do this, but instead I should be using convention plugins. These are locally defined plugins which contain the configuration we want to share. The submodules can then apply those plugins without needing to copy and paste the configuration - this makes it easy to selectively choose which plugins to apply to which module.
+Previously I would have used the `allprojects` or `subprojects` block to do this, but now we have convention plugins. These are locally defined plugins which contain the configuration we want to share. The submodules can then apply those plugins without needing to copy and paste the configuration - this makes it easy to selectively choose which plugins to apply to which module.
 
 ---
 
@@ -171,7 +171,7 @@ Lets look at the project structure:
 
 This project demonstrates how to use convention plugins located in the `buildSrc` directory. These plugins centralize common build configurations and dependencies, eliminating duplication across modules while allowing for consistent standards.
 
-Three key convention plugins handle different aspects of the build:
+In this example, three key convention plugins handle different aspects of the build:
 
 - `buildlogic.kotlin-common-conventions`: Sets up core Kotlin configuration, repositories, and testing infrastructure shared by all modules
 - `buildlogic.kotlin-library-conventions`: Configures library modules with the java-library plugin and common library settings
@@ -224,4 +224,37 @@ By using the plugins, we've avoided copying and pasting the configurations (whic
 > Tip: Use the latest version of gradle to create a new project so you
 can learn what the default project layout looks like - this is how I found out about the `libs.versions.toml` file! 
 
+Depending on your project you might want to create different convention plugins for things like:
 
+* buildlogic.kotlin-test-conventions:
+  * Configure test frameworks like Mockk, Kotest
+  * Set up test reporting
+  * Define test sets (integration, e2e, performance)
+  
+* buildlogic.documentation-conventions:
+  * Configure Dokka for Kotlin documentation
+  * Set up README validation
+  * Manage API documentation generation
+
+* buildlogic.quality-conventions:
+  * Set up Detekt for static analysis
+  * Configure ktlint for code formatting
+  * Add SonarQube integration
+  * Define code coverage thresholds
+
+* buildlogic.publishing-conventions:
+  * Configure Maven publication
+  * Set up signing
+  * Manage artifact metadata
+
+* buildlogic.platform-conventions:
+  * Define a version catalog platform
+  * Manage dependency constraints
+  * Handle cross-platform configurations
+  
+* buildlogic.performance-conventions:
+  * Configure build cache
+  * Set up parallel execution
+  * Define optimization rules
+  
+Each of these would fit nicely into the existing buildSrc structure and follow the same pattern of separating concerns while promoting reuse across modules.
