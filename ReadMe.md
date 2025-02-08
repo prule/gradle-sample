@@ -1,5 +1,8 @@
 # Sharing gradle configuration between modules
 
+> Source code for this project is available at https://github.com/prule/gradle-sample
+
+
 When setting up multimodule gradle projects, we often need to share configuration - such as java toolkit version, plugins, junit platform etc... 
 
 Previously I would have used the `allprojects` or `subprojects` block to do this, but now we have convention plugins. These are locally defined plugins which contain the configuration we want to share. The submodules can then apply those plugins without needing to copy and paste the configuration - this makes it easy to selectively choose which plugins to apply to which module.
